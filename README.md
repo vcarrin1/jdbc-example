@@ -7,6 +7,15 @@ This project is a demonstration how to use Java with PostgreSQL with JDBC and Li
 
 # Getting Started
 
+## JdbcTemplate
+
+JdbcTemplate is a core class in the Spring Framework that simplifies working with relational databases using JDBC. It handles common tasks such as:
+
+* Opening and closing database connections
+* Executing SQL queries and updates
+* Handling exceptions and translating them into Spring's DataAccessException hierarchy
+* Managing prepared statements and result sets
+
 ## Transactions/Rollbacks
 
 When deleting a Customer that has related orders with payments, we use @Transactional annotation, which is used to execute a block of code within a database transaction. If any exception is thrown inside the block, the transaction is rolled back automatically; otherwise, it is committed. 
