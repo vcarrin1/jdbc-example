@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Include main changelog from src/main/resources -->
+    <include file="db/changelog/changelog-root.xml" relativeToChangelogFile="false"/>
+
+    <!-- Test data (only runs in "test" context) -->
+    <changeSet id="load-test-data" author="demo">
+        <sqlFile 
+            path="test-data.sql" 
+            relativeToChangelogFile="true"/>
+    </changeSet>
+    
+</databaseChangeLog>
