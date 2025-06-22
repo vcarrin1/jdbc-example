@@ -1,5 +1,7 @@
 package com.vcarrin87.jdbc_example.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,30 @@ public class OrderItemsService {
      * This method creates a new order item.
      * @param orderItem The order item to create.
      */
-    public void createOrderItem(OrderItems orderItem) {
-        orderItemsRepository.save(orderItem);
-        log.info("Order item created: {}", orderItem);
+    public void createOrderItem(int orderId, int productId, int quantity, double price) {
+        int orderItemId = orderItemsRepository.save(orderId, productId, quantity, price);
+        log.info("Order item created: {}", orderItemId);
+    }
+
+    /**
+     * Get all order items.
+     */
+    public List<OrderItems> getAllOrderItems() {
+        List<OrderItems> allOrderItems = orderItemsRepository.findAll();
+        log.info("Retrieved all order items: {}", allOrderItems);
+        return allOrderItems;
+    }
+
+    /**
+     * Get order items by order ID.
+     */ 
+    public List<OrderItems> getOrderItemsByOrderId(int orderId) {
+        List<OrderItems> orderItems = orderItemsRepository.findByOrderId(orderId);
+        if (orderItems != null && !orderItems.isEmpty()) {
+            log.info("Order items found for order ID {}: {}", orderId, orderItems);
+        } else {
+            log.warn("No order items found for order ID {}", orderId);
+        }
+        return orderItems;
     }
 }

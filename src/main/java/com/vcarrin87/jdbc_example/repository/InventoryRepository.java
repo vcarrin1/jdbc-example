@@ -2,6 +2,7 @@ package com.vcarrin87.jdbc_example.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,11 +28,29 @@ public class InventoryRepository {
     };
 
     /**
+     * Find all inventory records.
+     */
+    public List<Inventory> findAll() {
+        String sql = "SELECT * FROM inventory";
+        return jdbcTemplate.query(sql, inventoryRowMapper);
+    }
+
+    /**
      * Create a new inventory record.
      */
     public int save(Inventory inventory) {
         String sql = "INSERT INTO inventory (product_id, stock_level) VALUES (?, ?)";
         return jdbcTemplate.update(sql, inventory.getProductId(), inventory.getStockLevel());
+    }
+
+    /**
+     * Update an existing inventory record.
+     * @param productId
+     * @return
+     */
+    public int updateInventory(int productId, int stockLevel) {
+        String sql = "UPDATE inventory SET stock_level = ? WHERE product_id = ?";
+        return jdbcTemplate.update(sql, stockLevel, productId);
     }
 
     /**
@@ -43,14 +62,6 @@ public class InventoryRepository {
     public Inventory findByProductId(int productId) {
         String sql = "SELECT * FROM inventory WHERE product_id = ?";
         return jdbcTemplate.queryForObject(sql, inventoryRowMapper, productId);
-    }
-
-    /**
-     * Update the stock level for a product.
-     */
-    public int updateStockLevel(int productId, int stockLevel) {
-        String sql = "UPDATE inventory SET stock_level = ? WHERE product_id = ?";
-        return jdbcTemplate.update(sql, stockLevel, productId);
     }
 
     /**

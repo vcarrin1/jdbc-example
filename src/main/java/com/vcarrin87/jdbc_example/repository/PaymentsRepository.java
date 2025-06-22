@@ -2,6 +2,7 @@ package com.vcarrin87.jdbc_example.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +41,9 @@ public class PaymentsRepository {
         return jdbcTemplate.queryForObject(sql, paymentsRowMapper, paymentId);
     }
 
-    public int save(Payments payment) {
+    public int save(int orderId, double amount, Timestamp paymententDate, String paymentMethod) {
         String sql = "INSERT INTO payments (order_id, amount, payment_date, payment_method) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, payment.getOrderId(), payment.getAmount(), payment.getPaymentDate(), payment.getPaymentMethod());
+        return jdbcTemplate.update(sql, orderId, amount, paymententDate, paymentMethod);
     }
 
     public int update(Payments payment) {

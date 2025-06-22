@@ -1,7 +1,7 @@
 package com.vcarrin87.jdbc_example.models;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.annotation.Nullable;
 import lombok.Data;
@@ -21,5 +21,8 @@ public class Orders {
     private Date deliveryDate; 
 
     @Nullable
-    private Collection<Payments> payments;
+    private List<OrderItems> orderItems;
+
+    @Nullable
+    private List<Payments> payments;
 }

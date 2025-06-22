@@ -99,4 +99,10 @@ public class ProductsRepository {
         return jdbcTemplate.query(sql, productsRowMapper);
     }
 
+    // Get product price by ID
+    public Double getProductPriceById(int productId) {
+        String sql = "SELECT price FROM products WHERE product_id = ?";
+        return jdbcTemplate.queryForObject(sql, Double.class, productId);
+    }
+
 }

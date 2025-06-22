@@ -1,6 +1,6 @@
 package com.vcarrin87.jdbc_example.models;
 
-import java.util.Collection;
+import java.util.List;
 
 import jakarta.annotation.Nullable;
 import lombok.Data;
@@ -20,5 +20,5 @@ public class Customer {
     private String address;
 
     @Nullable
-    private Collection<Orders> orders;
+    private List<Orders> orders;
 }

@@ -1,4 +1,3 @@
-# Read Me First
 This project is a demonstration how to use Java with PostgreSQL with JDBC and Liquibase
 
 **JDBC (Java Database Connectivity)** is a Java API that enables Java applications to interact with relational databases. It provides methods for querying and updating data, as well as managing database connections, statements, and result sets.
@@ -22,6 +21,18 @@ When deleting a Customer that has related orders with payments, we use @Transact
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/CustomerService.java #deleteCustomer()
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/OrdersService.java #deleteOrders()
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/ProductsService.java #deleteProduct()
+
+## Models explained
+
+* **Customer**: Represents the person placing the order. Stores details such as customer ID, name, contact information, and address. Each order is linked to a specific customer.
+* **Product**: Represents an item available for purchase. Contains information like product ID, name, description, price, and current inventory level. Products are referenced in OrderItems.
+* **Payment**: Records how an order was paid for. Includes payment ID, order ID, payment method (e.g., credit card, PayPal), payment status, and transaction details. Each payment is linked to a specific order.
+* **Order**: Represents the overall purchase (who, when, total, etc.).
+* **OrderItems**: Represents each product in the order (productId, quantity, price, etc.).
+- When a customer places an order, they usually buy multiple products. Each product is an OrderItem linked to the main Order via its ID. You need to record which products (and how many) are part of the order. This is done by inserting each OrderItem into the order_items table, using the new order’s ID.
+* **Inventory**: You must decrease the stock for each product sold.
+
+We combine all of these in OrdersService #placeOrder()
 
 ### Swagger-UI
 
