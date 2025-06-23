@@ -41,7 +41,6 @@ public class OrdersService {
      * This method creates a new order.
      * @param order The order to create.
      */
-    @Transactional
     public int createOrder(Orders order) {
         int newOrderId = ordersRepository.save(order);
         log.info("Order created: {}", order);

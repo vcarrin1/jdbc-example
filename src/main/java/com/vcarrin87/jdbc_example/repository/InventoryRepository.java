@@ -48,9 +48,9 @@ public class InventoryRepository {
      * @param productId
      * @return
      */
-    public int updateInventory(int productId, int stockLevel) {
-        String sql = "UPDATE inventory SET stock_level = ? WHERE product_id = ?";
-        return jdbcTemplate.update(sql, stockLevel, productId);
+    public int updateInventory(int productId, int delta) {
+        String sql = "UPDATE inventory SET stock_level = stock_level + ? WHERE product_id = ?";
+        return jdbcTemplate.update(sql, delta, productId);
     }
 
     /**
