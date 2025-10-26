@@ -41,9 +41,9 @@ public class PaymentsRepository {
         return jdbcTemplate.queryForObject(sql, paymentsRowMapper, paymentId);
     }
 
-    public int save(int orderId, double amount, Timestamp paymententDate, String paymentMethod) {
+    public int save(Payments payment) {
         String sql = "INSERT INTO payments (order_id, amount, payment_date, payment_method) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, orderId, amount, paymententDate, paymentMethod);
+        return jdbcTemplate.update(sql, payment.getOrderId(), payment.getAmount(), payment.getPaymentDate(), payment.getPaymentMethod());
     }
 
     public int update(Payments payment) {

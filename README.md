@@ -4,7 +4,37 @@ This project is a demonstration how to use Java with PostgreSQL with JDBC and Li
 * The project connects to PostgreSQL with Liquibase. 
 * During testing, it connects to H2 in-memory database with test data to run unit tests.
 
-# Getting Started
+## Security with Auth0 Integration
+This project uses Auth0 for Machine-to-Machine (M2M) authentication and authorization. Auth0 issues a JWT (JSON Web Token) to clients, which is then used to access protected API endpoints.
+
+**How it works:**
+1. The client application authenticates with Auth0 using its client credentials (client ID and secret).
+2. Auth0 returns a JWT access token if the credentials are valid.
+3. The client includes this JWT in the `Authorization: Bearer <token>` header of each API request.
+4. The backend validates the JWT signature and claims (such as audience and issuer) to ensure the request is authenticated and authorized.
+
+**Key points:**
+- Only clients with valid Auth0 credentials can obtain a JWT and access the API.
+- JWT tokens are validated on every request for authenticity and required scopes/roles.
+- Sensitive endpoints are protected using security filters that check for valid JWTs.
+
+
+**Example request:**
+```http
+GET /api/customers
+Authorization: Bearer <your-jwt-token>
+```
+
+The following screenshots illustrate the different access levels provided by each client.
+
+### Custom API
+![auth0 demo app](src/main/resources/static/demo-app.png)
+
+### Client with READ Access
+![client read access](src/main/resources/static/client-read-access.png)
+
+### Client with ADMIN Access
+![client admin  access](src/main/resources/static/client-admin-access.png)
 
 ## JdbcTemplate
 

@@ -18,3 +18,10 @@ spring:
     change-log: classpath:/db/changelog/changelog-root.xml
     drop-first: false
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-uiyohlg5bc7ywx10.us.auth0.com/
+          audience: demo-authorization-api
+

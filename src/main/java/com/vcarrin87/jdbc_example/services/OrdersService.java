@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vcarrin87.jdbc_example.models.OrderItems;
 import com.vcarrin87.jdbc_example.models.Orders;
+import com.vcarrin87.jdbc_example.models.Payments;
 import com.vcarrin87.jdbc_example.repository.InventoryRepository;
 import com.vcarrin87.jdbc_example.repository.OrderItemsRepository;
 import com.vcarrin87.jdbc_example.repository.OrdersRepository;
@@ -140,7 +141,12 @@ public class OrdersService {
         // Add payment
         Timestamp paymentDate = new Timestamp(System.currentTimeMillis());
         log.info("Payment date: {}", paymentDate);
-        paymentsRepository.save(newOrderId, totalAmount, paymentDate, "CREDIT_CARD");
+        Payments payment = new Payments();
+        payment.setOrderId(newOrderId);
+        payment.setAmount(totalAmount);
+        payment.setPaymentDate(paymentDate);
+        payment.setPaymentMethod("CREDIT_CARD");
+        paymentsRepository.save(payment);
     
         log.info("Order placed successfully: {}", order);
     }
