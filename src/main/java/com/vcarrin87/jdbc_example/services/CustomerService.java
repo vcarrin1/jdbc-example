@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vcarrin87.jdbc_example.models.Customer;
 import com.vcarrin87.jdbc_example.repository.CustomerRepository;
-import com.vcarrin87.jdbc_example.repository.OrdersRepository;
-import com.vcarrin87.jdbc_example.repository.PaymentsRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,12 +17,6 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
-
-    @Autowired
-    private OrdersRepository ordersRepository;
-
-    @Autowired
-    private PaymentsRepository paymentsRepository;
 
      /**
      * This method creates a new customer.
@@ -41,8 +33,8 @@ public class CustomerService {
      * @param id the ID of the customer to retrieve
      * @return the customer with the specified ID, or null if not found
      */
-    public Customer getCustomerById(Long id) {
-        Customer customer = customerRepository.findById(id);
+    public Customer getCustomerById(int id) {
+        Customer customer = customerRepository.findById(id).orElse(null);
         if (customer != null) {
             log.info("Customer found: {}", customer);
         } else {
@@ -68,25 +60,20 @@ public class CustomerService {
      * @param customer the customer to update
      */
     public void updateCustomer(Customer customer) {
-        int rowsAffected = customerRepository.update(customer);
-        if (rowsAffected > 0) {
-            log.info("Customer updated: {}", customer);
-        } else {
-            log.warn("No customer found with ID {}", customer.getCustomerId());
-        }   
+        customerRepository.save(customer);
+        log.info("Customer updated: {}", customer);
     }
 
     /**
-     * Deletes a customer by their ID.
+     * Deletes a customer by their ID. Cascades to their orders, order items, and payments
+     * via the Customer.orders/Orders.orderItems/Orders.payments mappings.
      *
      * @param id the ID of the customer to delete
      */
     @Transactional
-    public void deleteCustomer(Long id) {
-        paymentsRepository.deletePaymentsByCustomerId(id);
-        ordersRepository.deleteOrdersByCustomerId(id);
-        int rowsAffected = customerRepository.deleteById(id);
-        if (rowsAffected > 0) {
+    public void deleteCustomer(int id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
             log.info("Customer with ID {} and related orders/payments deleted", id);
         } else {
             log.warn("No customer found with ID {}", id);
@@ -94,11 +81,24 @@ public class CustomerService {
     }
 
     /**
-     * Retrieves customers along with their orders and payments.
+     * Retrieves a customer along with their orders and payments.
+     * The lazy collections are initialized here, while the transaction/session is still open.
      */
+    @Transactional(readOnly = true)
     public List<Customer> getCustomerWithOrdersAndPayments(int customerId) {
-        List<Customer> customersWithOrdersAndPayments = customerRepository.getCustomerWithOrdersAndPayments(customerId);
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if (customer == null) {
+            log.warn("Customer with ID {} not found", customerId);
+            return List.of();
+        }
+
+        customer.getOrders().forEach(order -> {
+            order.getOrderItems().size();
+            order.getPayments().size();
+        });
+
+        List<Customer> customersWithOrdersAndPayments = List.of(customer);
         log.info("Customers with orders and payments: {}", customersWithOrdersAndPayments);
-        return customersWithOrdersAndPayments;  
+        return customersWithOrdersAndPayments;
     }
 }

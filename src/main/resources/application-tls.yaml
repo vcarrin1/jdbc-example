@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: tls
+    include:
+      - optional:file:.env[.properties]
+
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore/keystore.p12
+    key-store-password: ${KEYSTORESECRET}
+    key-store-type: PKCS12
+    key-alias: myserver

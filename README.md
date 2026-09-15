@@ -1,7 +1,7 @@
-This project is a demonstration how to use Java with PostgreSQL with JDBC and Liquibase
+This project is a demonstration of how to use Java with PostgreSQL using Hibernate/JPA and Liquibase
 
-**JDBC (Java Database Connectivity)** is a Java API that enables Java applications to interact with relational databases. It provides methods for querying and updating data, as well as managing database connections, statements, and result sets.
-* The project connects to PostgreSQL with Liquibase. 
+**JPA (Jakarta Persistence API)** is a Java specification for object-relational mapping, and **Hibernate** is its most widely used implementation. Entities are annotated with `@Entity`/`@Id`/`@OneToMany`/`@ManyToOne`, and Spring Data JPA repositories (`JpaRepository`) provide CRUD and query methods derived from the entity model.
+* The project connects to PostgreSQL with Liquibase, which owns the schema; Hibernate is configured with `ddl-auto: validate` so it never alters the schema itself.
 * During testing, it connects to H2 in-memory database with test data to run unit tests.
 
 ## Security with Auth0 Integration
@@ -36,18 +36,27 @@ The following screenshots illustrate the different access levels provided by eac
 ### Client with ADMIN Access
 ![client admin  access](src/main/resources/static/client-admin-access.png)
 
-## JdbcTemplate
+## Hibernate / Spring Data JPA
 
-JdbcTemplate is a core class in the Spring Framework that simplifies working with relational databases using JDBC. It handles common tasks such as:
+Hibernate is the JPA provider used for all database access in this project. It handles common tasks such as:
 
-* Opening and closing database connections
-* Executing SQL queries and updates
+* Opening and closing database connections/sessions
+* Translating entity CRUD operations and JPQL/derived queries into SQL
+* Managing the persistence context (dirty checking, identity map, cascading)
 * Handling exceptions and translating them into Spring's DataAccessException hierarchy
-* Managing prepared statements and result sets
+
+Repositories are `JpaRepository<Entity, Id>` interfaces (see `repository/`), and entities declare real relationships with an explicit fetch strategy:
+
+* `Customer.orders`, `Orders.orderItems`, `Orders.payments`, `Products.orderItems` are all **LAZY** — only queried when the collection is actually accessed, avoiding unnecessary joins/queries.
+* `OrderItems.product` is the one **EAGER** relationship, since product details (name/price) are needed almost every time an order item is read.
+
+Because `spring.jpa.open-in-view` is disabled, any lazy collection that needs to be returned to a client is explicitly initialized (e.g. `order.getOrderItems().size()`) inside a `@Transactional` service method, before the Hibernate session closes.
 
 ## Transactions/Rollbacks
 
 When deleting a Customer that has related orders with payments, we use @Transactional annotation, which is used to execute a block of code within a database transaction. If any exception is thrown inside the block, the transaction is rolled back automatically; otherwise, it is committed. 
+
+Most of these cascading deletes are driven by `cascade = CascadeType.ALL` + `orphanRemoval = true` on the parent side of a relationship (e.g. `Customer.orders`, `Orders.orderItems`, `Orders.payments`), so deleting the parent entity cascades down automatically instead of requiring manual, separate delete calls per table.
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/CustomerService.java #deleteCustomer()
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/OrdersService.java #deleteOrders()
 * See example: src/main/java/com/vcarrin87/jdbc_example/services/ProductsService.java #deleteProduct()

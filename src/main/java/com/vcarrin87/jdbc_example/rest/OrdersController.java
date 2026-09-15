@@ -37,7 +37,7 @@ public class OrdersController {
      * This method is used to create a new order.
      * Example of a POST request:
     {
-        "customerId": 1,
+        "customer": { "customerId": 1 },
         "orderStatus": "PENDING",
         "deliveryDate": "2025-05-20T03:44:55.123Z"
     }
@@ -144,13 +144,13 @@ public class OrdersController {
                     return ResponseEntity.badRequest().body("Invalid product ID: " + productIdStr);
                 }
                 // Fetch product details from DB using a service method (assume getProductById exists)
-                var product = productsRepository.findById(productId);
+                var product = productsRepository.findById(productId).orElse(null);
                 if (product == null) {
                     return ResponseEntity.badRequest().body("Product not found for ID: " + productId);
                 }
                 OrderItems orderItem = new OrderItems();
-                // Set orderId later after order is created if needed
-                orderItem.setProductId(productId);
+                // Set order later after order is created if needed
+                orderItem.setProduct(product);
                 orderItem.setQuantity(1); // Default quantity, or you can extend to accept quantities
                 orderItem.setPrice(product.getPrice());
                 orderItemsList.add(orderItem);

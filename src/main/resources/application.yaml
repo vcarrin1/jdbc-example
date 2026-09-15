@@ -18,6 +18,12 @@ spring:
     change-log: classpath:/db/changelog/changelog-root.xml
     drop-first: false
 
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
   security:
     oauth2:
       resourceserver:

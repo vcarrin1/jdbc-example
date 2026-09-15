@@ -37,7 +37,7 @@ public class PaymentsController {
      * This method is used to create a new payment.
      * Example of a POST request:
      {
-         "orderId": 1,
+         "order": { "orderId": 1 },
          "paymentDate": "2025-05-20T03:44:55.123Z",
          "amount": 100.00,
          "paymentMethod": "CREDIT_CARD"
@@ -72,7 +72,7 @@ public class PaymentsController {
      * Example of a POST request:
      {
          "paymentId": 1,
-         "orderId": 1,
+         "order": { "orderId": 1 },
          "paymentDate": "2025-05-20T03:44:55.123Z",
          "amount": 100.00,
          "paymentMethod": "CREDIT_CARD"

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vcarrin87.jdbc_example.models.Products;
 import com.vcarrin87.jdbc_example.repository.InventoryRepository;
-import com.vcarrin87.jdbc_example.repository.OrderItemsRepository;
 import com.vcarrin87.jdbc_example.repository.ProductsRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,6 @@ public class ProductsService {
 
     @Autowired
     private ProductsRepository productsRepository;
-
-    @Autowired
-    private OrderItemsRepository orderItemsRepository;
 
     @Autowired
     private InventoryRepository inventoryRepository;
@@ -42,7 +38,7 @@ public class ProductsService {
      * @return the product with the specified ID, or null if not found
      */
     public Products getProductById(int id) {
-        Products product = productsRepository.findById(id);
+        Products product = productsRepository.findById(id).orElse(null);
         if (product != null) {
             log.info("Product found: {}", product);
         } else {
@@ -60,16 +56,16 @@ public class ProductsService {
         log.info("Product updated: {}", product);
     }
     /**
-     * Deletes a product by its ID.
+     * Deletes a product by its ID. Cascades to related order items via the
+     * Products.orderItems mapping; inventory is unrelated so it's deleted explicitly.
      *
      * @param id the ID of the product to delete
      */
     @Transactional
     public void deleteProduct(int id) {
-        inventoryRepository.deleteInventoryByProductId(id);
-        orderItemsRepository.deleteOrderItemByProductId(id);
-        int rowsAffected = productsRepository.deleteById(id);
-        if (rowsAffected > 0) {
+        inventoryRepository.deleteByProductId(id);
+        if (productsRepository.existsById(id)) {
+            productsRepository.deleteById(id);
             log.info("Product with ID {} deleted successfully", id);
         } else {
             log.warn("No product found with ID {}", id);
@@ -88,14 +84,19 @@ public class ProductsService {
     }
 
     /**
-     * Get product with order items.
+     * Get product with order items. The lazy collection is initialized here,
+     * while the transaction/session is still open.
      * @param productId the ID of the product to retrieve with order items
-     * @return list of products with order items
+     * @return the product with its order items
      */
+    @Transactional(readOnly = true)
     public Products getProductWithOrderItems(int productId) {
-        Products productWithOrderItems = productsRepository.getProductWithOrderItems(productId);
-        log.info("Retrieved product with order items: {}", productWithOrderItems);
-        return productWithOrderItems;
+        Products product = productsRepository.findById(productId).orElse(null);
+        if (product != null) {
+            product.getOrderItems().size();
+        }
+        log.info("Retrieved product with order items: {}", product);
+        return product;
     }
 
     /**

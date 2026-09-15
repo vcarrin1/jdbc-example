@@ -59,7 +59,7 @@ public class CustomerController {
      /customers/1
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@RequestParam Long id) {
+    public ResponseEntity<Customer> getCustomerById(@RequestParam int id) {
         Customer customer = customerService.getCustomerById(id);
         if (customer != null) {
             return ResponseEntity.ok(customer);
@@ -93,7 +93,7 @@ public class CustomerController {
      /customers/delete-customer/1
      */
     @DeleteMapping("/delete-customer/{customerId}")  
-    public ResponseEntity<String> deleteCustomer(@PathVariable Long customerId) {
+    public ResponseEntity<String> deleteCustomer(@PathVariable int customerId) {
         try {
             customerService.deleteCustomer(customerId);
             return ResponseEntity.ok("Customer deleted successfully");
