@@ -14,10 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -79,7 +83,7 @@ class OrdersServiceTest {
         Date deliveryDate = new Date(System.currentTimeMillis());
         int productId = 10;
         int quantity = 2;
-        double price = 50.0;
+        BigDecimal price = BigDecimal.valueOf(50.0);
 
         List<OrderItems> orderItems = Collections.singletonList(orderItemFor(productId, quantity));
 
@@ -96,11 +100,11 @@ class OrdersServiceTest {
                 item.getOrder().getOrderId() == generatedOrderId
                         && item.getProduct().getProductId() == productId
                         && item.getQuantity() == quantity
-                        && item.getPrice() == price * quantity));
+                        && Objects.equals(item.getPrice(), price.multiply(BigDecimal.valueOf(quantity)))));
         verify(inventoryRepository).updateInventory(productId, -quantity);
         verify(paymentsRepository).save(argThat(payment ->
                 payment.getOrder().getOrderId() == generatedOrderId
-                        && payment.getAmount() == price * quantity
+                        && Objects.equals(payment.getAmount(), price.multiply(BigDecimal.valueOf(quantity)))
                         && "CREDIT_CARD".equals(payment.getPaymentMethod())));
     }
 
@@ -113,8 +117,8 @@ class OrdersServiceTest {
         List<OrderItems> orderItems = Arrays.asList(orderItemFor(11, 1), orderItemFor(12, 3));
 
         int generatedOrderId = 200;
-        double price1 = 20.0;
-        double price2 = 15.0;
+        BigDecimal price1 = BigDecimal.valueOf(20.0);
+        BigDecimal price2 = BigDecimal.valueOf(15.0);
 
         when(ordersRepository.saveWithGeneratedKey(any(Orders.class))).thenReturn(generatedOrderId);
         when(productsRepository.getProductPriceById(11)).thenReturn(price1);
@@ -129,18 +133,29 @@ class OrdersServiceTest {
                 item.getOrder().getOrderId() == generatedOrderId
                         && item.getProduct().getProductId() == 11
                         && item.getQuantity() == 1
-                        && item.getPrice() == price1 * 1));
+                        && item.getPrice().compareTo(
+                        price1.multiply(BigDecimal.valueOf(1))
+                ) == 0
+        ));
         verify(orderItemsRepository).save(argThat(item ->
                 item.getOrder().getOrderId() == generatedOrderId
                         && item.getProduct().getProductId() == 12
                         && item.getQuantity() == 3
-                        && item.getPrice() == price2 * 3));
+                        && item.getPrice().compareTo(
+                        price2.multiply(BigDecimal.valueOf(3))
+                ) == 0
+        ));
         verify(inventoryRepository).updateInventory(11, -1);
         verify(inventoryRepository).updateInventory(12, -3);
+        BigDecimal expectedAmount =
+                price1.add(
+                        price2.multiply(BigDecimal.valueOf(3))
+                );
         verify(paymentsRepository).save(argThat(payment ->
                 payment.getOrder().getOrderId() == generatedOrderId
-                        && payment.getAmount() == price1 * 1 + price2 * 3
-                        && "CREDIT_CARD".equals(payment.getPaymentMethod())));
+                        && payment.getAmount().compareTo(expectedAmount) == 0
+                        && "CREDIT_CARD".equals(payment.getPaymentMethod())
+        ));
     }
 
     @Test
@@ -161,7 +176,7 @@ class OrdersServiceTest {
         verifyNoInteractions(inventoryRepository);
         verify(paymentsRepository).save(argThat(payment ->
                 payment.getOrder().getOrderId() == generatedOrderId
-                        && payment.getAmount() == 0.0
+                        && payment.getAmount().compareTo(BigDecimal.ZERO) == 0
                         && "CREDIT_CARD".equals(payment.getPaymentMethod())));
     }
 }

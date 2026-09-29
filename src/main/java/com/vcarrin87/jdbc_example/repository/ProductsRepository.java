@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,5 @@ public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
     // Get product price by ID
     @Query("SELECT p.price FROM Products p WHERE p.productId = :productId")
-    Double getProductPriceById(@Param("productId") int productId);
+    BigDecimal getProductPriceById(@Param("productId") int productId);
 }

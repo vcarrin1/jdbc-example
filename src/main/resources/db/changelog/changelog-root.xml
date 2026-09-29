@@ -11,5 +11,6 @@
     <include file="db/changelog/tables/order_items.xml"/>
     <include file="db/changelog/tables/payments.xml"/>
     <include file="db/changelog/tables/inventory.xml"/>
+    <include file="db/changelog/tables/audit_records.xml"/>
 
 </databaseChangeLog>

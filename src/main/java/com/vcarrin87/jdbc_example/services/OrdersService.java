@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.services;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -126,7 +127,7 @@ public class OrdersService {
         // Extract generated order ID
         order.setOrderId(newOrderId);  // Set ID on order object
 
-        double totalAmount = 0;
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
         // Save each order item after the order is created
         for (OrderItems item : orderItems) {
@@ -134,17 +135,20 @@ public class OrdersService {
             log.info("Processing order item: {}", item);
             int productId = item.getProduct().getProductId();
             int quantity = item.getQuantity();
-            Double price = productsRepository.getProductPriceById(productId);
+            BigDecimal price = productsRepository.getProductPriceById(productId);
             log.info("Product ID: {}, Quantity: {}, Price: {}", productId, quantity, price);
+
+            BigDecimal itemTotal =
+                    price.multiply(BigDecimal.valueOf(quantity));
 
             // Add order item with the correct order/product references
             OrderItems orderItem = new OrderItems();
             orderItem.setOrder(ordersRepository.getReferenceById(newOrderId));
             orderItem.setProduct(productsRepository.getReferenceById(productId));
             orderItem.setQuantity(quantity);
-            orderItem.setPrice(price * quantity);
+            orderItem.setPrice(itemTotal);
             orderItemsRepository.save(orderItem);
-            totalAmount += price * quantity;
+            totalAmount = totalAmount.add(itemTotal);
             log.info("Added order item: productId={}, quantity={}, price={}, totalAmount={}", productId, quantity, price, totalAmount);
             // Update inventory
             inventoryRepository.updateInventory(productId, -quantity);

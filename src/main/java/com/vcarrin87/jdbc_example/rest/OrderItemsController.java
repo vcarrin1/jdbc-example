@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.rest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class OrderItemsController {
             @RequestParam("orderId") int orderId,
             @RequestParam("productId") int productId,
             @RequestParam("quantity") int quantity,
-            @RequestParam("price") double price) {
+            @RequestParam("price") BigDecimal price) {
         try {
             orderItemsService.createOrderItem(orderId, productId, quantity, price);
             return ResponseEntity.ok("Order item created successfully");

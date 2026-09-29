@@ -2,6 +2,7 @@ package com.vcarrin87.jdbc_example.services;
 
 import java.util.List;
 
+import com.vcarrin87.jdbc_example.annotation.Audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class CustomerService {
      * This method creates a new customer.
      * @param customer The customer to create.
      */
+    @Audit(action = "CREATE_CUSTOMER", resource = "CUSTOMER")
     public void createCustomer(Customer customer) {
         customerRepository.save(customer);
         log.info("Customer created: {}", customer);

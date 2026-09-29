@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class OrderItemsService {
     /**
      * This method creates a new order item, resolving the order/product ids to managed references.
      */
-    public void createOrderItem(int orderId, int productId, int quantity, double price) {
+    public void createOrderItem(int orderId, int productId, int quantity, BigDecimal price) {
         OrderItems orderItem = new OrderItems();
         orderItem.setOrder(ordersRepository.getReferenceById(orderId));
         orderItem.setProduct(productsRepository.getReferenceById(productId));

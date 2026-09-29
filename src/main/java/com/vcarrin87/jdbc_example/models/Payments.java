@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.models;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -34,8 +35,8 @@ public class Payments {
     @JsonBackReference("order-payments")
     private Orders order;
 
-    @Column(nullable = false)
-    private double amount;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal amount;
 
     @Nullable
     @Column(name = "payment_date")

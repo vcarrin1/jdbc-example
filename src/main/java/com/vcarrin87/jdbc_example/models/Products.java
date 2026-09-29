@@ -1,5 +1,6 @@
 package com.vcarrin87.jdbc_example.models;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -35,7 +36,7 @@ public class Products {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     // LAZY: order items referencing this product are only queried when the collection is accessed;
     // cascade REMOVE mirrors the old behavior of deleting order items when their product is deleted

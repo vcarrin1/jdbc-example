@@ -2,6 +2,7 @@ package com.vcarrin87.jdbc_example.services;
 
 import java.util.List;
 
+import com.vcarrin87.jdbc_example.annotation.Audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,11 @@ public class ProductsService {
      * @param id the ID of the product to delete
      */
     @Transactional
-    public void deleteProduct(int id) {
+    @Audit(
+            action = "DELETE_PRODUCT",
+            resource = "PRODUCT"
+    )
+    public void deleteProduct(int id, String reason) {
         inventoryRepository.deleteByProductId(id);
         if (productsRepository.existsById(id)) {
             productsRepository.deleteById(id);

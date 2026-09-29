@@ -84,13 +84,12 @@ public class ProductsController {
      * Example of a DELETE request:
      /products/delete-product/1
      */
-    @DeleteMapping("/delete-product/{product_id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable int product_id) {
+    @DeleteMapping("/delete-product/{product_id}/{reason}")
+    public ResponseEntity<String> deleteProduct(@PathVariable int product_id, @PathVariable String reason) {
         try {
-            productsService.deleteProduct(product_id);
+            productsService.deleteProduct(product_id, reason);
             return ResponseEntity.ok("Product " + product_id + " deleted successfully");
         } catch (Exception e) {
-            System.out.println("Error deleting product: " + e.getMessage());
             return ResponseEntity.status(500).body("Error deleting product: " + e.getMessage());
         }
     }
