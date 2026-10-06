@@ -19,6 +19,7 @@ public class SecurityConfig {
             .csrf(csrt -> csrt.disable())
             .authorizeHttpRequests(request -> request
                 .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/**").hasAnyAuthority("SCOPE_ADMIN", "SCOPE_USER")
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/**").hasAuthority("SCOPE_ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/**").hasAuthority("SCOPE_ADMIN")
